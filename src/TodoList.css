@@ -1,0 +1,53 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.todo-title {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.todo-input {
+    margin: 5px;
+    padding: 10px;
+    font-size: 1em;
+}
+
+.todo-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.todo-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.todo-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.todo-delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
