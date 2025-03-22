@@ -1,11 +1,17 @@
+
+import { Link, Outlet } from 'react-router-dom';
 import "./App.css";
-import TodoList from "./TodoList";
 
 
 function App() {
   return (
     <>
-      <TodoList />
+      <nav>
+        <Link style={{ marginRight: "10px" }} to={"/home"}>Home</Link>
+        <Link style={{ marginRight: "10px" }} to={"/about"}>About</Link>
+        <Link to={"/contact"}>Contact</Link>
+      </nav>
+      <Outlet />
     </>
   );
 }
