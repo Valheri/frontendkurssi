@@ -1,19 +1,30 @@
-
-import { Link, Outlet } from 'react-router-dom';
 import "./App.css";
 
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Dayjs } from "dayjs";
+import { useState } from "react";
 
 function App() {
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+
+  const handleDateChange = (newValue: Dayjs | null) => {
+    setSelectedDate(newValue);
+  };
+
   return (
     <>
-      <nav>
-        <Link style={{ marginRight: "10px" }} to={"/home"}>Home</Link>
-        <Link style={{ marginRight: "10px" }} to={"/about"}>About</Link>
-        <Link to={"/contact"}>Contact</Link>
-      </nav>
-      <Outlet />
+      <h1>Date</h1>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        
+        <DatePicker
+          label="Select a date"
+          value={selectedDate}
+          onChange={handleDateChange}
+          format="DD/MM/YYYY"
+        />
+      </LocalizationProvider>
     </>
   );
 }
-
 export default App;
