@@ -59,8 +59,8 @@ body {
     cursor: pointer;
     transition: background-color 0.3s;
     display: block;
-    /* Ensure the button is treated as a block element */
-    margin: 0 auto;
+    margin: 8px;
+   
     /* Center the button horizontally */
 }
 
@@ -79,10 +79,6 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
-
-.ReactModal__Overlay {
-    background-color: rgba(0, 0, 0, 0.75) !important;
 }
 
 .modal-overlay {

@@ -10,10 +10,13 @@ function App() {
         <Link to="/" className="nav-link">
           Customers
         </Link>
+        <Link to="/trainings" className="nav-link">
+          Trainings
+        </Link>
       </nav>
       <Routes>
         <Route path="/" element={<CustomerList />} />
-        <Route path="/trainings/:customerId" element={<TrainingList />} />
+        <Route path="/trainings" element={<TrainingList />} />
       </Routes>
     </Router>
   );

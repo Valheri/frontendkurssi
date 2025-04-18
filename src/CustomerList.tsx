@@ -1,5 +1,4 @@
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
-import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { AgGridReact } from "ag-grid-react";
 import { useEffect, useRef, useState } from "react";
@@ -10,11 +9,22 @@ import "./styles.css";
 ModuleRegistry.registerModules([AllCommunityModule]);
 Modal.setAppElement("#root");
 
+const baseUrl = "https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/";
+
 type Customer = {
   id: number;
-  name: string;
+  firstname: string;
+  lastname: string;
+  streetaddress: string;
+  postcode: string;
+  city: string;
   email: string;
-  trainings: { date: string; activity: string; duration: number }[];
+  phone: string;
+  _links: {
+    self: { href: string };
+    customer: { href: string };
+    trainings: { href: string };
+  };
 };
 
 const CustomerList = () => {
@@ -25,27 +35,22 @@ const CustomerList = () => {
   const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
-    setCustomers([
-      {
-        id: 1,
-        name: "John Doe",
-        email: "john@example.com",
-        trainings: [
-          { date: "2025-10-01T10:00:00", activity: "Running", duration: 30 },
-          { date: "2025-10-02T12:00:00", activity: "Swimming", duration: 45 },
-        ],
-      },
-      {
-        id: 2,
-        name: "Jane Smith",
-        email: "jane@example.com",
-        trainings: [
-          { date: "2025-11-01T09:00:00", activity: "Cycling", duration: 60 },
-          { date: "2025-11-03T14:00:00", activity: "Yoga", duration: 40 },
-        ],
-      },
-    ]);
+    fetchCustomers();
   }, []);
+
+  const fetchCustomers = async () => {
+    try {
+      const res = await fetch(`${baseUrl}customers`);
+      const data = await res.json();
+      const fetched = data._embedded.customers.map((cust: any) => {
+        const parts = cust._links.self.href.split('/');
+        return { ...cust, id: Number(parts[parts.length - 1]) };
+      });
+      setCustomers(fetched);
+    } catch (error) {
+      console.error("Error fetching customers", error);
+    }
+  };
 
   const handleAddCustomer = () => {
     setCurrentCustomer(null);
@@ -57,27 +62,63 @@ const CustomerList = () => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteCustomer = (id: number) => {
+  const handleDeleteCustomer = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this customer?")) {
-      setCustomers(prevCustomers => prevCustomers.filter(customer => customer.id !== id));
+      try {
+        await fetch(`${baseUrl}customers/${id}`, { method: "DELETE" });
+        fetchCustomers();
+      } catch (error) {
+        console.error("Error deleting customer", error);
+      }
     }
   };
 
-  const handleSaveCustomer = (customer: Customer) => {
-    if (currentCustomer) {
-      setCustomers(customers.map(c => (c.id === currentCustomer.id ? customer : c)));
-    } else {
-      setCustomers([...customers, { ...customer, id: Date.now() }]);
+  const handleSaveCustomer = async (customerData: any) => {
+    try {
+      if (currentCustomer) {
+        await fetch(`${baseUrl}customers/${currentCustomer.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(customerData),
+        });
+      } else {
+        await fetch(`${baseUrl}customers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(customerData),
+        });
+      }
+      setIsModalOpen(false);
+      fetchCustomers();
+    } catch (error) {
+      console.error("Error saving customer", error);
     }
-    setIsModalOpen(false);
+  };
+
+  const handleReset = async () => {
+    try {
+      await fetch(`https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/reset`, { method: "POST" });
+      fetchCustomers();
+    } catch (error) {
+      console.error("Error resetting API data", error);
+    }
+  };
+
+  const handleViewTrainings = () => {
+    // Always navigate to the general trainings page
+    navigate(`/trainings`);
   };
 
   const [columnDefs] = useState<ColDef<Customer>[]>([
-    { field: "name", headerName: "Name", sortable: true, filter: true, flex: 2 },
+    {
+      headerName: "Name",
+      flex: 2,
+      valueGetter: (params: any) => `${params.data.firstname} ${params.data.lastname}`,
+    },
     { field: "email", headerName: "Email", sortable: true, filter: true, flex: 2 },
     {
       headerName: "Edit",
-      field: "actionEdit",
+      
       flex: 1,
       cellRenderer: (params: any) => (
         <button onClick={() => handleEditCustomer(params.data)} className="action-button">
@@ -87,28 +128,10 @@ const CustomerList = () => {
     },
     {
       headerName: "Delete",
-      field: "actionDelete",
       flex: 1,
       cellRenderer: (params: any) => (
         <button onClick={() => handleDeleteCustomer(params.data.id)} className="action-button">
           Delete
-        </button>
-      ),
-    },
-    {
-      headerName: "Trainings",
-      field: "actionTrainings",
-      flex: 1,
-      cellRenderer: (params: any) => (
-        <button
-          onClick={() => {
-            navigate(`/trainings/${params.data.id}`, {
-              state: { trainings: params.data.trainings, customer: params.data },
-            });
-          }}
-          className="action-button"
-        >
-          View Trainings
         </button>
       ),
     },
@@ -118,16 +141,23 @@ const CustomerList = () => {
     <div className="container">
       <div className="card">
         <h1 className="title">Customer List</h1>
-        <button onClick={handleAddCustomer} className="action-button">
-          Add Customer
-        </button>
+        <div className="button-group">
+          <button onClick={handleAddCustomer} className="action-button">
+            Add Customer
+          </button>
+          <button onClick={handleReset} className="action-button">
+            Reset API Data
+          </button>
+          <button onClick={handleViewTrainings} className="action-button">
+            View Trainings
+          </button>
+        </div>
         {!isModalOpen && (
-          <div className="ag-theme-alpine grid-container" style={{ height: "70vh" }}>
+          <div className="ag-theme-alpine grid-container" >
             <AgGridReact
               ref={gridRef}
               rowData={customers}
               columnDefs={columnDefs}
-              rowSelection="single"
               animateRows={true}
               defaultColDef={{
                 flex: 1,
@@ -142,7 +172,7 @@ const CustomerList = () => {
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         overlayClassName="modal-overlay"
-        contentClassName="modal-content"
+        
       >
         <CustomerForm
           customer={currentCustomer}
@@ -160,21 +190,66 @@ const CustomerForm = ({
   onCancel,
 }: {
   customer: Customer | null;
-  onSave: (customer: Customer) => void;
+  onSave: (customer: any) => void;
   onCancel: () => void;
 }) => {
-  const [name, setName] = useState(customer?.name || "");
+  const [firstname, setFirstname] = useState(customer?.firstname || "");
+  const [lastname, setLastname] = useState(customer?.lastname || "");
   const [email, setEmail] = useState(customer?.email || "");
+  const [phone, setPhone] = useState(customer?.phone || "");
+  const [streetaddress, setStreetaddress] = useState(customer?.streetaddress || "");
+  const [postcode, setPostcode] = useState(customer?.postcode || "");
+  const [city, setCity] = useState(customer?.city || "");
 
   const handleSubmit = () => {
-    onSave({ id: customer?.id || 0, name, email, trainings: customer?.trainings || [] });
+    onSave({ firstname, lastname, email, phone, streetaddress, postcode, city });
   };
 
   return (
     <div>
       <h2>{customer ? "Edit Customer" : "Add Customer"}</h2>
-      <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input
+        type="text"
+        placeholder="First Name"
+        value={firstname}
+        onChange={(e) => setFirstname(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Last Name"
+        value={lastname}
+        onChange={(e) => setLastname(e.target.value)}
+      />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Phone"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Street Address"
+        value={streetaddress}
+        onChange={(e) => setStreetaddress(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Postcode"
+        value={postcode}
+        onChange={(e) => setPostcode(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="City"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+      />
       <button onClick={handleSubmit}>Save</button>
       <button onClick={onCancel}>Cancel</button>
     </div>
