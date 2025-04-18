@@ -5,6 +5,8 @@ import { AgGridReact } from "ag-grid-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css"; // Import shared CSS
+//used chatGpt and old code to create this file
+
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -33,7 +35,7 @@ const CustomerList = () => {
       field: "id",
       headerName: "Actions",
       flex: 1,
-      cellRenderer: (params) => (
+      cellRenderer: (params: { value: any; }) => (
         <button onClick={() => navigate(`/trainings/${params.value}`)} className="action-button">
           View Trainings
         </button>
