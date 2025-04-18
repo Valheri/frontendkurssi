@@ -1,7 +1,8 @@
+import { EventInput } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import { default as EventSourceInput, default as FullCalendar } from "@fullcalendar/react";
+import { default as FullCalendar } from "@fullcalendar/react";
 
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ import { useEffect, useState } from "react";
 const baseUrl = "https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/";
 
 const CalendarPage = () => {
-    const [events, setEvents] = useState<EventSourceInput>([]);
+    const [events, setEvents] = useState<EventInput[]>([]);
 
     useEffect(() => {
         fetchEvents();
