@@ -1,7 +1,7 @@
 import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import CustomerList from "./CustomerList";
 import TrainingList from "./TrainingList";
-import "./styles.css"; // Import shared CSS
+import "./styles.css";
 
 function App() {
   return (
