@@ -109,6 +109,37 @@ const CustomerList = () => {
     navigate(`/trainings`);
   };
 
+
+  //https://stackoverflow.com/questions/56154046/downloading-blob-with-type-text-csv-strips-unicode-bom
+  const handleExportCSV = () => {
+    // Define CSV headers
+    const headers = ["First Name", "Last Name", "Email", "Phone", "Street Address", "Postcode", "City"];
+    // Map customers to CSV rows filtering out extra fields
+    const rows = customers.map(cust => [
+      cust.firstname,
+      cust.lastname,
+      cust.email,
+      cust.phone,
+      cust.streetaddress,
+      cust.postcode,
+      cust.city
+    ]);
+    // Build CSV string with headers and rows
+    const csvContent = [headers, ...rows]
+      .map(e => e.join(","))
+      .join("\n");
+      
+    // Create a blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "customers.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const [columnDefs] = useState<ColDef<Customer>[]>([
     {
       headerName: "Name",
@@ -150,6 +181,9 @@ const CustomerList = () => {
           </button>
           <button onClick={handleViewTrainings} className="action-button">
             View Trainings
+          </button>
+          <button onClick={handleExportCSV} className="action-button">
+            Export CSV
           </button>
         </div>
         {!isModalOpen && (
