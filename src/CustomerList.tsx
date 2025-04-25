@@ -4,12 +4,11 @@ import { AgGridReact } from "ag-grid-react";
 import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
+import { deleteCustomer, fetchCustomers, resetApiData, saveCustomer } from "./api";
 import "./styles.css";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 Modal.setAppElement("#root");
-
-const baseUrl = "https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/";
 
 type Customer = {
   id: number;
@@ -35,18 +34,13 @@ const CustomerList = () => {
   const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
-    fetchCustomers();
+    fetchCustomerList();
   }, []);
 
-  const fetchCustomers = async () => {
+  const fetchCustomerList = async () => {
     try {
-      const res = await fetch(`${baseUrl}customers`);
-      const data = await res.json();
-      const fetched = data._embedded.customers.map((cust: any) => {
-        const parts = cust._links.self.href.split('/');
-        return { ...cust, id: Number(parts[parts.length - 1]) };
-      });
-      setCustomers(fetched);
+      const data = await fetchCustomers();
+      setCustomers(data);
     } catch (error) {
       console.error("Error fetching customers", error);
     }
@@ -64,41 +58,29 @@ const CustomerList = () => {
 
   const handleDeleteCustomer = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this customer?")) {
-      try {
-        await fetch(`${baseUrl}customers/${id}`, { method: "DELETE" });
-        fetchCustomers();
-      } catch (error) {
-        console.error("Error deleting customer", error);
-      }
+        try {
+            await deleteCustomer(id);
+            fetchCustomerList();
+        } catch (error) {
+            console.error("Error deleting customer", error);
+        }
     }
-  };
+};
 
-  const handleSaveCustomer = async (customerData: any) => {
+const handleSaveCustomer = async (customerData: any) => {
     try {
-      if (currentCustomer) {
-        await fetch(`${baseUrl}customers/${currentCustomer.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(customerData),
-        });
-      } else {
-        await fetch(`${baseUrl}customers`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(customerData),
-        });
-      }
-      setIsModalOpen(false);
-      fetchCustomers();
+        await saveCustomer(customerData, currentCustomer?.id);
+        setIsModalOpen(false);
+        fetchCustomerList();
     } catch (error) {
-      console.error("Error saving customer", error);
+        console.error("Error saving customer", error);
     }
-  };
+};
 
   const handleReset = async () => {
     try {
-      await fetch(`https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/reset`, { method: "POST" });
-      fetchCustomers();
+      await resetApiData();
+      fetchCustomerList();
     } catch (error) {
       console.error("Error resetting API data", error);
     }
@@ -108,7 +90,6 @@ const CustomerList = () => {
     // Always navigate to the general trainings page
     navigate(`/trainings`);
   };
-
 
   //https://stackoverflow.com/questions/56154046/downloading-blob-with-type-text-csv-strips-unicode-bom
   const handleExportCSV = () => {

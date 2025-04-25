@@ -1,12 +1,20 @@
-import { ColDef } from "ag-grid-community";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import { AgGridReact } from "ag-grid-react";
-import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Modal from "react-modal";
+import { deleteTraining, fetchCustomers, fetchTrainings, saveTraining } from "./api";
 import "./styles.css";
+
+
+
+import { ColDef } from "ag-grid-community";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import { AgGridReact } from "ag-grid-react";
+import dayjs from "dayjs";
+
+
+import "./styles.css";
+
 
 Modal.setAppElement("#root");
 
@@ -39,29 +47,23 @@ const TrainingList = () => {
   const [customerList, setCustomerList] = useState<Customer[]>([]);
 
   useEffect(() => {
-    fetchTrainings();
-    fetchCustomerList();
+    fetchTrainingsData();
+    fetchCustomerListData();
   }, []);
 
-  const fetchTrainings = async () => {
+  const fetchTrainingsData = async () => {
     try {
-      const res = await fetch(`${baseUrl}gettrainings`);
-      const data = await res.json();
+      const data = await fetchTrainings();
       setTrainings(data);
     } catch (error) {
       console.error("Error fetching trainings", error);
     }
   };
 
-  const fetchCustomerList = async () => {
+  const fetchCustomerListData = async () => {
     try {
-      const res = await fetch(`${baseUrl}customers`);
-      const data = await res.json();
-      const fetched = data._embedded.customers.map((cust: any) => {
-        const parts = cust._links.self.href.split('/');
-        return { ...cust, id: Number(parts[parts.length - 1]) };
-      });
-      setCustomerList(fetched);
+      const data = await fetchCustomers();
+      setCustomerList(data);
     } catch (error) {
       console.error("Error fetching customer list", error);
     }
@@ -76,8 +78,8 @@ const TrainingList = () => {
     if (!id) return;
     if (window.confirm("Are you sure you want to delete this training session?")) {
       try {
-        await fetch(`${baseUrl}trainings/${id}`, { method: "DELETE" });
-        fetchTrainings();
+        await deleteTraining(id);
+        fetchTrainingsData();
       } catch (error) {
         console.error("Error deleting training", error);
       }
@@ -93,21 +95,14 @@ const TrainingList = () => {
     };
 
     try {
-
-      await fetch(`${baseUrl}trainings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
+      await saveTraining(payload);
       setIsModalOpen(false);
-      fetchTrainings();
+      fetchTrainingsData();
     } catch (error) {
       console.error("Error saving training", error);
     }
   };
-  // useMemo is used to memoize the columns definition
-  // to avoid unnecessary re-renders and improve performance
+
   const columns: ColDef[] = useMemo(() => [
     {
       headerName: "Date",
@@ -172,6 +167,7 @@ const TrainingList = () => {
           <div>
             <label>Customer:</label>
             <select
+            title="Select customer"
             name="customer"
               value={
                 trainingForm.customerLink

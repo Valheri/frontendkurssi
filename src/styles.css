@@ -1,13 +1,24 @@
 body {
-    margin: 0;
+    margin: 10;
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
 }
 
 .navbar {
+    position: fixed;
+    /* Fix the navbar at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* Make it span the full width */
+    z-index: 1000;
+    /* Ensure it stays above other content */
     padding: 16px;
-    background-color: #e2e8f0;
+    background-color: transparent;
+    box-shadow:none;
+    /* Add a subtle shadow for better visibility */
 }
+
 
 .nav-link {
     padding: 8px 16px;
@@ -24,18 +35,29 @@ body {
 
 .container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+    justify-content: flex-start;
+    height: calc(100vh - 64px);
+    /* Subtract the navbar height */
+    overflow: hidden;
+    /* Prevent scrolling of the entire container */
+    padding-top: 64px;
+    box-sizing: border-box;
 }
 
 .card {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* Allow the card to grow and fill the available space */
     width: 100%;
     max-width: 960px;
     padding: 16px;
     background-color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .title {
@@ -46,7 +68,14 @@ body {
 }
 
 .grid-container {
-    height: 70vh;
+    flex: 1;
+    /* Allow the grid to grow and fill the remaining space */
+    height: calc(100vh - 200px);
+    /* Adjust this value based on the height of the navbar and other elements */
+    overflow-y: auto;
+    /* Add scrolling inside the grid if needed */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .action-button {
@@ -88,4 +117,87 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
+}
+
+
+/* Calendar */
+
+
+.calendar-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: calc(100vh - 64px); /* Subtract the navbar height */
+    
+    padding-top: 50px;
+    box-sizing: border-box;
+}
+
+.calendar-page h1 {
+    margin: 16px 0;
+}
+
+/* Add padding or margin to the calendar container */
+.calendar-page > div {
+    flex: 1;
+    width: 100%;
+    overflow-y: auto; /* Enable scrolling inside the calendar */
+    box-sizing: border-box;
+    padding-right: 16px; /* Add padding to prevent scroll overlap */
+}
+
+/* Style for all events */
+.fc-event {
+    background-color: #3b82f6 !important; /* Blue background */
+    color: white !important; /* White text */
+    border: none !important; /* Remove border */
+    border-radius: 4px; /* Optional: Add rounded corners */
+    padding: 2px 4px;
+    margin: 5px 0; /* Add vertical spacing between events */
+}
+
+.fc-event:hover {
+    background-color: #2563eb !important; /* Darker blue on hover */
+    cursor: pointer; /* Show pointer cursor on hover */
+}
+/* Style for events in the list view */
+.fc-list-event {
+    background-color: #4eb5ff !important; /* Light blue background */
+    color: #000 !important; /* Black text for better readability */
+    border: 1px solid #b3d9ff !important; /* Add a subtle border */
+
+    margin: 4px 0; /* Add spacing between events */
+    padding: 8px; /* Add padding for better readability */
+}
+
+/* Hover effect for list view events */
+.fc-list-event:hover {
+    background-color: #cce4ff !important; /* Slightly darker blue on hover */
+    color: #000 !important; /* Ensure text remains readable */
+    cursor: pointer; /* Show pointer cursor on hover */
+}
+
+
+
+/* Style for the Diagram container */
+.diagram-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 64px); /* Fullscreen minus navbar height */
+    padding: 26px;
+    box-sizing: border-box;
+    overflow: hidden; 
+}
+
+.diagram-container h1 {
+    font-size: 24px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.diagram-container canvas {
+    max-width: 100%; /* Ensure the chart scales to fit the screen */
+    height: auto; /* Maintain aspect ratio */
 }
