@@ -6,7 +6,7 @@ import "./styles.css";
 import TrainingList from "./TrainingList";
 function App() {
   return (
-    <Router>
+    <Router basename="/frontendkurssi">
       <nav className="navbar">
         <Link to="/" className="nav-link">
           Customers
