@@ -126,11 +126,14 @@ const handleSaveCustomer = async (customerData: any) => {
       headerName: "Name",
       flex: 2,
       valueGetter: (params: any) => `${params.data.firstname} ${params.data.lastname}`,
+      sortable: true, // Enable sorting
+      comparator: (a: string, b: string) => a.localeCompare(b), // Alphabetical sorting
+      filter: true, // Enable filtering
     },
-    { field: "email", headerName: "Email", sortable: true, filter: true, flex: 2 },
+    { field: "email", headerName: "Email", sortable: true, comparator: (a: string, b: string) => a.localeCompare(b), filter: true,  flex: 2 },
     {
       headerName: "Edit",
-      
+      sortable: false,
       flex: 1,
       cellRenderer: (params: any) => (
         <button onClick={() => handleEditCustomer(params.data)} className="action-button">
@@ -141,6 +144,8 @@ const handleSaveCustomer = async (customerData: any) => {
     {
       headerName: "Delete",
       flex: 1,
+      sortable: false,
+      filter: false,
       cellRenderer: (params: any) => (
         <button onClick={() => handleDeleteCustomer(params.data.id)} className="action-button">
           Delete

@@ -13,8 +13,6 @@ import { AgGridReact } from "ag-grid-react";
 import dayjs from "dayjs";
 
 
-import "./styles.css";
-
 
 Modal.setAppElement("#root");
 
@@ -110,22 +108,41 @@ const TrainingList = () => {
       flex: 1,
       valueFormatter: (params) => dayjs(params.value).format("DD.MM.YYYY HH:mm"),
       sortable: true,
-      filter: true
+      comparator: (a: string, b: string) => new Date(a).getTime() - new Date(b).getTime(), // Sort dates chronologically
+      filter: true,
     },
-    { headerName: "Activity", field: "activity", sortable: true, filter: true, flex: 1 },
-    { headerName: "Duration (min)", field: "duration", sortable: true, filter: true, flex: 1 },
+    {
+      headerName: "Activity",
+      field: "activity",
+      sortable: true,
+      filter: true,
+      flex: 1,
+      comparator: (a: string, b: string) => a.localeCompare(b), // Alphabetical sorting
+    },
+    {
+      headerName: "Duration (min)",
+      field: "duration",
+      sortable: true,
+      filter: true,
+      flex: 1,
+      comparator: (a: number, b: number) => a - b, // Numerical sorting (low to high)
+    },
     {
       headerName: "Customer",
       flex: 2,
       valueGetter: (params: any) => {
         const cust = params.data.customer;
         return cust ? `${cust.firstname} ${cust.lastname}` : "N/A";
-      }
+      },
+      sortable: true,
+      comparator: (a: string, b: string) => a.localeCompare(b), // Alphabetical sorting
     },
     {
       headerName: "Actions",
       field: "actions",
       flex: 1,
+      sortable: false,
+      filter: false,
       cellRenderer: (params: any) => (
         <>
           <button onClick={() => handleDeleteClick(params.data.id)} className="action-button">Delete</button>
@@ -149,26 +166,45 @@ const TrainingList = () => {
         </div>
         )}
       </div>
-      <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} overlayClassName="modal-overlay">
-        <div>
-          <h2>{trainingForm.id ? "Edit Training" : "Add Training"}</h2>
-          <div>
-            <label>Date:</label>
-            <DatePicker selected={trainingForm.date} onChange={(date) => setTrainingForm({ ...trainingForm, date: date || new Date() })} showTimeSelect dateFormat="yyyy-MM-dd HH:mm" />
+      <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} overlayClassName="modal-overlay" className="modal">
+        <div className="modal-content">
+          <h2 className="modal-title">{trainingForm.id ? "Edit Training" : "Add Training"}</h2>
+          <div className="modal-field">
+            <label className="modal-label">Date:</label>
+            <DatePicker
+              selected={trainingForm.date}
+              onChange={(date) => setTrainingForm({ ...trainingForm, date: date || new Date() })}
+              showTimeSelect
+              dateFormat="yyyy-MM-dd HH:mm"
+              timeFormat="HH:mm"
+              className="modal-input"
+            />
           </div>
-          <div>
-            <label>Activity:</label>
-            <input type="text" placeholder="Enter activity" value={trainingForm.activity} onChange={(e) => setTrainingForm({ ...trainingForm, activity: e.target.value })} />
+          <div className="modal-field">
+            <label className="modal-label">Activity:</label>
+            <input
+              type="text"
+              placeholder="Enter activity"
+              value={trainingForm.activity}
+              onChange={(e) => setTrainingForm({ ...trainingForm, activity: e.target.value })}
+              className="modal-input"
+            />
           </div>
-          <div>
-            <label>Duration (min):</label>
-            <input type="number" placeholder="0" value={trainingForm.duration} onChange={(e) => setTrainingForm({ ...trainingForm, duration: +e.target.value })} />
+          <div className="modal-field">
+            <label className="modal-label">Duration (min):</label>
+            <input
+              type="number"
+              placeholder="0"
+              value={trainingForm.duration}
+              onChange={(e) => setTrainingForm({ ...trainingForm, duration: +e.target.value })}
+              className="modal-input"
+            />
           </div>
-          <div>
-            <label>Customer:</label>
+          <div className="modal-field">
+            <label className="modal-label">Customer:</label>
             <select
-            title="Select customer"
-            name="customer"
+              title="Select customer"
+              name="customer"
               value={
                 trainingForm.customerLink
                   ? trainingForm.customerLink.split("/").pop() || ""
@@ -177,9 +213,10 @@ const TrainingList = () => {
               onChange={(e) =>
                 setTrainingForm({
                   ...trainingForm,
-                  customerLink: `${baseUrl}customers/${e.target.value}`
+                  customerLink: `${baseUrl}customers/${e.target.value}`,
                 })
               }
+              className="modal-input"
             >
               <option value="">Select customer</option>
               {customerList.map((cust) => (
@@ -189,8 +226,10 @@ const TrainingList = () => {
               ))}
             </select>
           </div>
-          <button onClick={handleSaveTraining}>Save</button>
-          <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+          <div className="modal-actions">
+            <button onClick={handleSaveTraining} className="modal-button save-button">Save</button>
+            <button onClick={() => setIsModalOpen(false)} className="modal-button cancel-button">Cancel</button>
+          </div>
         </div>
       </Modal>
     </div>

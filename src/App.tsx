@@ -5,6 +5,7 @@ import Diagram from "./Diagram";
 import "./styles.css";
 import TrainingList from "./TrainingList";
 function App() {
+  //for dev use: basename="/", this is now set for my github pages
   return (
     <Router basename="/frontendkurssi">
       <nav className="navbar">
