@@ -66,6 +66,7 @@ const CalendarPage = () => {
                     displayEventEnd={true}
                     eventTimeFormat={{ hour: "2-digit", minute: "2-digit", hour12: false }}
                     slotLabelFormat={{ hour: "2-digit", minute: "2-digit", hour12: false }}
+                    slotDuration="00:15:00"
                     headerToolbar={{
                         left: "prev,next today",
                         center: "title",

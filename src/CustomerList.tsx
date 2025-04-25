@@ -192,7 +192,7 @@ const handleSaveCustomer = async (customerData: any) => {
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         overlayClassName="modal-overlay"
-        
+        className="modal"
       >
         <CustomerForm
           customer={currentCustomer}
@@ -226,52 +226,86 @@ const CustomerForm = ({
   };
 
   return (
-    <div>
-      <h2>{customer ? "Edit Customer" : "Add Customer"}</h2>
-      <input
-        type="text"
-        placeholder="First Name"
-        value={firstname}
-        onChange={(e) => setFirstname(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Last Name"
-        value={lastname}
-        onChange={(e) => setLastname(e.target.value)}
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Phone"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Street Address"
-        value={streetaddress}
-        onChange={(e) => setStreetaddress(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Postcode"
-        value={postcode}
-        onChange={(e) => setPostcode(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="City"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-      />
-      <button onClick={handleSubmit}>Save</button>
-      <button onClick={onCancel}>Cancel</button>
+    <div className="modal-content">
+      <h2 className="modal-title">{customer ? "Edit Customer" : "Add Customer"}</h2>
+      <div className="modal-field">
+        <label className="modal-label">First Name:</label>
+        <input
+          type="text"
+          placeholder="First Name"
+          value={firstname}
+          onChange={(e) => setFirstname(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-field">
+        <label className="modal-label">Last Name:</label>
+        <input
+          type="text"
+          placeholder="Last Name"
+          value={lastname}
+          onChange={(e) => setLastname(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-field">
+        <label className="modal-label">Email:</label>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-field">
+        <label className="modal-label">Phone:</label>
+        <input
+          type="text"
+          placeholder="Phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-field">
+        <label className="modal-label">Street Address:</label>
+        <input
+          type="text"
+          placeholder="Street Address"
+          value={streetaddress}
+          onChange={(e) => setStreetaddress(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-field">
+        <label className="modal-label">Postcode:</label>
+        <input
+          type="text"
+          placeholder="Postcode"
+          value={postcode}
+          onChange={(e) => setPostcode(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-field">
+        <label className="modal-label">City:</label>
+        <input
+          type="text"
+          placeholder="City"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-actions">
+        <button onClick={handleSubmit} className="modal-button save-button">
+          Save
+        </button>
+        <button onClick={onCancel} className="modal-button cancel-button">
+          Cancel
+        </button>
+      </div>
     </div>
   );
 };

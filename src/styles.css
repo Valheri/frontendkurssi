@@ -100,6 +100,8 @@ body {
 /* Modal overlay */
 .modal-overlay {
     position: fixed;
+    width: 100%;
+    height: 100%;
     top: 0;
     left: 0;
     right: 0;
@@ -117,7 +119,8 @@ body {
     border-radius: 8px;
     padding: 24px;
     width: 100%;
-    min-width: 450px;
+    min-width: 350px;
+    height: 100%;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
@@ -129,10 +132,12 @@ body {
 
 /* Modal title */
 .modal-title {
-    font-size: 20px;
+    font-size: 16px; /* Slightly smaller font size */
     font-weight: bold;
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 8px; /* Reduce the bottom margin */
+    padding: 0; 
+    
 }
 
 /* Modal field */
@@ -144,7 +149,7 @@ body {
 
 /* Modal label */
 .modal-label {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     color: #333;
 }
@@ -159,10 +164,16 @@ body {
     box-sizing: border-box;
 }
 
+/* Modal actions (buttons) */
+.modal-actions {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 16px;
+}
 
 /* Modal buttons */
 .modal-button {
-    margin-top: 10px;
+    
     padding: 10px 16px;
     font-size: 14px;
     border: none;
